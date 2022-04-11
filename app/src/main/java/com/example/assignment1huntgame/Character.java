@@ -1,8 +1,7 @@
 package com.example.assignment1huntgame;
 
-import android.graphics.Bitmap;
+import android.icu.number.Scale;
 import android.widget.ImageView;
-import android.graphics.Matrix;
 
 public class Character {
     int x;
@@ -10,8 +9,9 @@ public class Character {
     int spriteUp;
     int spriteDown;
     int spriteLeft; // right is a flipped Left
-    int image;
+    int currentSprite;
     ImageView[][] grid;
+    public enum Direction{UP, DOWN, LEFT, RIGHT}
 
     Character(ImageView[][] grid, int x, int y, int spriteUp, int spriteDown, int spriteLeft) {
         this.grid = grid;
@@ -20,32 +20,49 @@ public class Character {
         this.spriteUp = spriteUp;
         this.spriteDown = spriteDown;
         this.spriteLeft = spriteLeft;
-        this.image = spriteLeft; // facing left as default position
-        grid[y][x].setImageResource(image);
+        this.currentSprite = spriteLeft; // facing left as default position
+        grid[y][x].setImageResource(currentSprite);
     }
 
-    void move(int xMovement, int yMovement) {
+    void move(Direction dir) {
         grid[y][x].setImageResource(0); // [y][x] so that y = up/down and x = left/right, intuitive
-        y = Math.max(0, Math.min(grid.length-1, y + yMovement)); // stay within grid limits
-        x = Math.max(0, Math.min(grid[0].length-1, x + xMovement));
-        grid[y][x].setImageResource(image);
-    }
-
-    void spriteDirection(int xDirection, int yDirection) {
-        ImageView me = grid[y][x];
-        if (xDirection != 0) {
-            me.setImageResource(spriteLeft);
-            me.setScaleX(xDirection);
+        float xScale = grid[y][x].getScaleX(); // preserve sprite facing left/right
+        switch (dir) {
+            case UP:
+                y = Math.max(y - 1, 0);
+                break;
+            case DOWN:
+                y = Math.min(y + 1, grid.length - 1);
+                break;
+            case LEFT:
+                x = Math.max(x - 1, 0);
+                break;
+            case RIGHT:
+                x = Math.min(x + 1, grid[0].length - 1);
+                break;
         }
-        if (yDirection == 1)
-            me.setImageResource(spriteUp);
-        else if (yDirection == -1)
-            me.setImageResource(spriteDown);
+        grid[y][x].setImageResource(currentSprite);
+        grid[y][x].setScaleX(xScale);
     }
 
-    public static Bitmap RotateBitmap(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    void rotateSprite(Direction dir) {
+        ImageView me = grid[y][x];
+        switch (dir) {
+            case UP:
+                currentSprite = spriteUp;
+                break;
+            case DOWN:
+                currentSprite = spriteDown;
+                break;
+            case LEFT:
+                currentSprite = spriteLeft;
+                me.setScaleX(1);
+                break;
+            case RIGHT:
+                currentSprite = spriteLeft;
+                me.setScaleX(-1);
+                break;
+        }
+        me.setImageResource(currentSprite);
     }
 }

@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,8 +33,24 @@ public class MainActivity extends AppCompatActivity {
                 R.drawable.oshiro_down,
                 R.drawable.oshiro_left);
 
-//        player.move(1, 0);
-//        player.spriteDirection(0, -1);
+        MaterialButton[] controls = { // order matters - UDLR is 0123 in the Direction enum
+                findViewById(R.id.buttonUp),
+                findViewById(R.id.buttonDown),
+                findViewById(R.id.buttonLeft),
+                findViewById(R.id.buttonRight)};
+
+        for (int i = 0; i < controls.length; i++) {
+            Character.Direction dir = Character.Direction.values()[i];
+            controls[i].setOnClickListener(view -> {
+                player.rotateSprite(dir);
+                player.move(dir);
+                player.rotateSprite(dir);
+            });
+        }
+
+
+        player.move(Character.Direction.RIGHT);
+        player.rotateSprite(Character.Direction.RIGHT);
 //        HP = takeDamage(hearts, HP, 1);
     }
 
