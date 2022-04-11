@@ -32,20 +32,20 @@ public class Character {
     }
 
     void move() {
-        grid[row][col].setImageResource(0); // [y][x] so that y = up/down and x = left/right, intuitive
+        grid[row][col].setImageResource(0);
         float xScale = grid[row][col].getScaleX(); // preserve sprite facing left/right
         switch (direction) {
-            case LEFT: // TODO: inverted because of transposed matrix, will fix later
-                col = Math.max(col - 1, 0);
-                break;
-            case RIGHT:
-                col = Math.min(col + 1, grid[0].length - 1);
-                break;
             case UP:
                 row = Math.max(row - 1, 0);
                 break;
             case DOWN:
                 row = Math.min(row + 1, grid.length - 1);
+                break;
+            case LEFT:
+                col = Math.max(col - 1, 0);
+                break;
+            case RIGHT:
+                col = Math.min(col + 1, grid[0].length - 1);
                 break;
         }
         grid[row][col].setImageResource(currentSprite);
