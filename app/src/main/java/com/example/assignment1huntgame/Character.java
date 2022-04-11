@@ -1,53 +1,61 @@
 package com.example.assignment1huntgame;
 
-import android.icu.number.Scale;
+import android.view.View;
 import android.widget.ImageView;
 
 public class Character {
-    int x;
-    int y;
+    int row;
+    int col;
     int spriteUp;
     int spriteDown;
     int spriteLeft; // right is a flipped Left
     int currentSprite;
     ImageView[][] grid;
-    public enum Direction{UP, DOWN, LEFT, RIGHT}
 
-    Character(ImageView[][] grid, int x, int y, int spriteUp, int spriteDown, int spriteLeft) {
+    public enum Direction{UP, DOWN, LEFT, RIGHT}
+    Direction direction;
+
+    Character(ImageView[][] grid, int startRow, int startCol,
+              int spriteUp,
+              int spriteDown,
+              int spriteLeft) {
         this.grid = grid;
-        this.x = x;
-        this.y = y;
+        this.row = startRow;
+        this.col = startCol;
         this.spriteUp = spriteUp;
         this.spriteDown = spriteDown;
         this.spriteLeft = spriteLeft;
-        this.currentSprite = spriteLeft; // facing left as default position
-        grid[y][x].setImageResource(currentSprite);
+
+        direction = Direction.LEFT; // left as default position
+        this.currentSprite = spriteLeft;
+        grid[row][col].setImageResource(currentSprite);
     }
 
-    void move(Direction dir) {
-        grid[y][x].setImageResource(0); // [y][x] so that y = up/down and x = left/right, intuitive
-        float xScale = grid[y][x].getScaleX(); // preserve sprite facing left/right
-        switch (dir) {
-            case UP:
-                y = Math.max(y - 1, 0);
-                break;
-            case DOWN:
-                y = Math.min(y + 1, grid.length - 1);
-                break;
-            case LEFT:
-                x = Math.max(x - 1, 0);
+    void move() {
+        grid[row][col].setImageResource(0); // [y][x] so that y = up/down and x = left/right, intuitive
+        float xScale = grid[row][col].getScaleX(); // preserve sprite facing left/right
+        switch (direction) {
+            case LEFT: // TODO: inverted because of transposed matrix, will fix later
+                col = Math.max(col - 1, 0);
                 break;
             case RIGHT:
-                x = Math.min(x + 1, grid[0].length - 1);
+                col = Math.min(col + 1, grid[0].length - 1);
+                break;
+            case UP:
+                row = Math.max(row - 1, 0);
+                break;
+            case DOWN:
+                row = Math.min(row + 1, grid.length - 1);
                 break;
         }
-        grid[y][x].setImageResource(currentSprite);
-        grid[y][x].setScaleX(xScale);
+        grid[row][col].setImageResource(currentSprite);
+        grid[row][col].setScaleX(xScale);
     }
 
-    void rotateSprite(Direction dir) {
-        ImageView me = grid[y][x];
-        switch (dir) {
+    void setDirection(Direction direction) {
+        this.direction = direction;
+        ImageView me = grid[row][col];
+        switch (this.direction) {
             case UP:
                 currentSprite = spriteUp;
                 break;
@@ -64,5 +72,14 @@ public class Character {
                 break;
         }
         me.setImageResource(currentSprite);
+    }
+
+    public void setPosition(int newRow, int newCol) {
+        grid[row][col].setImageResource(0);
+        float xScale = grid[row][col].getScaleX(); // preserve sprite facing left/right
+        row = newRow;
+        col = newCol;
+        grid[row][col].setImageResource(spriteLeft);
+        grid[row][col].setScaleX(xScale);
     }
 }
